@@ -8,3 +8,4 @@ seaborn
 toolz
 arrow
 ipywidgets
+ipykernel

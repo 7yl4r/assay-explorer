@@ -73,6 +73,13 @@ If you make a mistake (like a typo in a plate layout), you can delete the datase
 ## Visualizing Data
 -->
 
+# Installation
 
+## Dependencies:
 
-    
+```
+virtualenv virtualEnv
+source ./virtualEnv/bin/activate
+pip install -r ./requirements.txt
+jupyter nbextension enable --py --sys-prefix widgetsnbextension
+```

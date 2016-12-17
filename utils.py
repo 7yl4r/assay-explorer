@@ -8,10 +8,10 @@ try:
     from StringIO import StringIO
 except Exception as e:
     from io import StringIO
-    
+
 from itertools import cycle, islice
-    
-from toolz import partitionby, thread_first, thread_last, curry, assoc 
+
+from toolz import partitionby, thread_first, thread_last, curry, assoc
 import numpy as np
 import pandas as pd
 from pandas import DataFrame as df
@@ -22,7 +22,7 @@ import arrow
 def string_is_empty(string):
     """ Return True if string is empty. """
     return string == ''
-                    
+
 # a -> a
 def identity(x):
     return x
@@ -56,14 +56,14 @@ def concatenate(x):
         return x[0]
     elif len(x) == 2:
         return x[0] + x[1]
-    else: 
+    else:
         return x[0] + x[1] + concatenate(x[2:])
 
 # DataFrame -> DataFrame
 def reset_index(dataframe):
     return dataframe.reset_index(drop=True)
 
-# (a -> b -> c) -> {a:b} -> [c] 
+# (a -> b -> c) -> {a:b} -> [c]
 @curry
 def mapdict(f,d):
     """ Map f over list of key-value pairs of dictionary d. """
@@ -93,7 +93,7 @@ def df_difference(a,b):
 def curry_funcs(funcs):
     """ Curry each function in provided list. """
     for func in funcs:
-        try: 
+        try:
             exec('global {}; {} = curry({})'.format(*[func]*3))
         except:
             exec('{} = curry({})'.format(*[func]*2))
@@ -197,7 +197,7 @@ class Infix:
         return self.function(other)
     def __call__(self, value1, value2):
         return self.function(value1, value2)
-    
+
 # [a] -> Boolean
 def is_empty(x):
     return len(x) == 0
@@ -209,7 +209,7 @@ are_all_in = Infix(lambda a,b: is_empty(set(a).difference(set(b))))
 
 # Number -> Int
 def stringify(n,num_chars):
-    """ Return string version of number with specified number of characters. 
+    """ Return string version of number with specified number of characters.
         Prefix with zeros as required. (e.g. stringify(12,4) == '0012'). """
     string_n = str(n)
     prefix_zeros = ''.join(['0']*(num_chars - len(string_n)))
@@ -231,7 +231,7 @@ def set_model(filepath,k,v):
     new_json_data = json.dumps(new_data)
     g.write(new_json_data)
     g.close()
-    
+
 # String -> Widget -> a -> SideEffects[File]
 @curry
 def persist_widget_value(filepath,widget,key):
@@ -241,19 +241,19 @@ def persist_widget_value(filepath,widget,key):
 # {a:b} -> a -> b
 @curry
 def maybe_get(d,k,v):
-    """ Given a dictionary d, return value corresponding to key k. 
+    """ Given a dictionary d, return value corresponding to key k.
         If k is not present in dictionary, return v. """
     try:
         return d[k]
     except:
-        return v    
-    
+        return v
+
 # String -> a -> b
 @curry
 def maybe_get_model(filepath,k,v):
     """ Try to load json file at filepath and return value associated with key k.
         If this fails (file isn't present or key is absent), then return v. """
-    try: 
+    try:
         data = json.loads(from_file(filepath))
         return data[k]
     except:
@@ -262,14 +262,15 @@ def maybe_get_model(filepath,k,v):
 # DataFrame -> String -> [String] -> [String] -> DataFrame
 def normalize_by_division(dataframe,newcol,numerator_cols,denominator_cols):
     """ Return new DataFrame, where newcol = sum(numerator_cols)/sum(denominator_cols)"""
+    # print(dataframe,numerator_cols)
     numerator = dataframe[numerator_cols].apply(sum, axis = 1)
     denominator = dataframe[denominator_cols].apply(sum, axis = 1)
     new_df = dataframe.copy()
     new_df[newcol] = numerator / denominator
-    return new_df    
+    return new_df
 
 def filter_rows(df,col,val):
-    """ Return new DataFrame where the values in col match val. 
+    """ Return new DataFrame where the values in col match val.
         val may be a single value or a list of values. """
     if type(val) == list:
         return df[df[col].isin(val)]
@@ -294,7 +295,7 @@ def header_to_column(series):
 
 # DataFrame -> DataFrame
 def headers_to_column(dataframe):
-    """ Given Dataframe, return new Dataframe with two columns: value, label. 
+    """ Given Dataframe, return new Dataframe with two columns: value, label.
     Created by taking each value in table, and pairing it with its column name. """
     reshaped_dataframes = [header_to_column(dataframe[col]) \
                             for col in dataframe.columns]
@@ -316,8 +317,8 @@ def multiaggregate(dataframe,funcs,fnames):
 @curry
 def summarize(dataframe,funcs = [],fnames = []):
     summary = multiaggregate(dataframe,funcs,fnames)
-    
-    # Properly set string columns 
+
+    # Properly set string columns
     # (drop columns with more than a single unique value.)
     for col in get_string_columns(dataframe):
         if dataframe[col].nunique() == 1:
@@ -333,7 +334,7 @@ def groupby_and_summarize(dataframe,col,funcs = [],fnames = []):
         dataframe,
         lambda x: x.groupby(col),
         (map, snd),
-        (map,summarize(funcs = funcs, 
+        (map,summarize(funcs = funcs,
                        fnames = fnames)),
         pd.concat,
         reset_index)
@@ -361,7 +362,7 @@ def format_filename(pair):
 
 # (String,[String],[String]) -> [(String,String)]
 def get_dataset_in_dir(dir_triple):
-    """ Given a triple of (path,subdirectories,files), 
+    """ Given a triple of (path,subdirectories,files),
         return list of tuples of (directory,filename)."""
     directory = dir_triple[0]
     filenames = dir_triple[2]
@@ -370,12 +371,12 @@ def get_dataset_in_dir(dir_triple):
         map(lambda filename: filename.rstrip('-well.csv').rstrip('-conditions.csv')),
         set,
         list,
-        map(lambda trimmed_filename: (directory,trimmed_filename)))  
+        map(lambda trimmed_filename: (directory,trimmed_filename)))
 
 # String -> {String:(String,String)}
 def get_files(path):
-    """ Given a path, recursively find all files beneath it, and return 
-        a dictionary with a display string as the key and a tuple of 
+    """ Given a path, recursively find all files beneath it, and return
+        a dictionary with a display string as the key and a tuple of
         (path,stripped filename). """
     return thread_first(
         path,
@@ -396,7 +397,7 @@ def string_only_contains(string,character):
 
 # String -> DataFrame['Well Name',Parameter]
 def parse_label_group(string):
-    """ Takes string containing all data for one field, and creates a 
+    """ Takes string containing all data for one field, and creates a
         tidy dataframe with two columns: 'Well Name', and field. """
     letters = list('ABCDEFGHIJKLMNOPQRSTUVWXYZ')
     raw_dataframe = pd.read_csv(StringIO(string))
@@ -414,14 +415,14 @@ def parse_label_group(string):
 
 # String -> DataFrame
 def get_layout_data(path):
-    """ Given a path to a file with proper format (see below), return a dataframe 
+    """ Given a path to a file with proper format (see below), return a dataframe
         with 'Well Name' column and additional columns for each provided parameter.
-        
+
         Format: Parameter Name, 1, 2 ...
                 A, Value, Value ...
                 B, Value, Value ...
         Notes: '\r' is present in csv output on windows (or google docs) and can confuse pandas `read_csv` function.
-               Algorithm partitions by whether row is empty (each section of data should be separated by a blank line), 
+               Algorithm partitions by whether row is empty (each section of data should be separated by a blank line),
                  then filters out groups where row is empty (text of row contains only commas).
                 ...   """
     return thread_last(
@@ -448,14 +449,14 @@ def to_file(filename,content):
     """ Save content to file. """
     f = open(filename,'w+')
     f.write(content)
-    
+
 # String -> String -> Boolean
 @curry
 def exists_at_path(path,entity):
     """ Return True if entity (file or folder) exists
         in directory at specified path. """
     full_path = os.path.join(path,entity)
-    return os.path.exists(full_path)    
+    return os.path.exists(full_path)
 
 # DataFrame -> {k:v} -> DataFrame
 def add_dict_to_dataframe(dataframe,my_dict):
@@ -487,23 +488,23 @@ def format_timestamp(ts):
 
 # String -> [String]
 def split_on_newlines(string):
-    """ Given a string which may contain \r, \n, or both, 
+    """ Given a string which may contain \r, \n, or both,
         split on newlines so neither character is present in output. """
-    
+
     r = '\r' in string
     n = '\n' in string
-    
-    if r and n: 
+
+    if r and n:
         return string.replace('\r','').split('\n')
     elif r:
         return string.split('\r')
     else:
         return string.split('\n')
-    
+
 # List a -> Int -> List a
 def takecycle(elements, n):
     """ Return first n elements of infinite cycle given by elements. """
-    return thread_first(elements, cycle, (islice, n), list)    
+    return thread_first(elements, cycle, (islice, n), list)
 
 # Int -> Int -> 2D Array Int
 def checker(rows, cols):
