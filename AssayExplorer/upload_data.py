@@ -8,8 +8,8 @@ import arrow
 from numpy.random import random
 import pandas as pd
 
-from toolz import partition, partitionby, thread_last, thread_first
-from utils import (snd, exists_at_path, get_layout_data, add_dict_to_dataframe,
+from toolz import partition, partitionby, thread_last
+from utils import (snd, exists_at_path, add_dict_to_dataframe,
                    add_col, maprows, format_num, from_file, format_timestamp,
                    parse_label_group, string_only_contains, generate_sid)
 
@@ -29,7 +29,7 @@ def rename_column(col):
 
 def get_normalization_config():
     import config.columns as conf
-    normalization_config = conf.v1
+    return conf.v2
 
 class Uploader():
     def __init__(self, plate_import_config, gather_plate_data):
