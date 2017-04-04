@@ -74,13 +74,12 @@ def gather_plate_data(plate_metadata):
 import pandas as pd
 
 
-def delete_handler(_):
+def delete_handler(timestamp, db_data, uploader):
     """ Remove data uploaded at selected timestamp. """
-    timestamp = delete_dropdown.value
     trimmed_data = db_data[db_data['Upload Timestamp'] != timestamp]
     trimmed_data.to_csv(uploader.db_path,index=False)
     clear_output()
-    print "Just deleted data."
+    print("Just deleted data.")
 
 
 # def split_on_newlines(string):
@@ -120,19 +119,20 @@ if __name__ == "__main__":
     db_data = pd.read_csv(uploader.db_path)
     timestamps = db_data['Upload Timestamp'].unique()
 
-    delete_options = thread_last(
-        timestamps,
-        list,
-        lambda x: sorted(x,reverse=True),
-        (map,lambda x: (x,x)),
-        (map,lambda x: (format_timestamp(x[0]),x[1])),
-        OrderedDict
-    )
+    # delete_options = thread_last(
+    #     timestamps,
+    #     list,
+    #     lambda x: sorted(x,reverse=True),
+    #     (map,lambda x: (x,x)),
+    #     (map,lambda x: (format_timestamp(x[0]),x[1])),
+    #     OrderedDict
+    # )
 
-    print("options: ", delete_options)
+    print("options: ", timestamps)
     del_choice = raw_input("delete? [y/N]")
     if del_choice in ['yes', 'y']:
-        delete_handler()
+        timestamp = raw_input("enter timestamp to delete")
+        delete_handler(timestamp, db_data, uploader)
 
     # testpath = '/notebooks/tmp/extracted-data/Plates/APB HS JS (60X) 08.06.2015 siRNA VE821.txt'
     # test = get_plate_data(testpath,uploader.plate_import_config)
