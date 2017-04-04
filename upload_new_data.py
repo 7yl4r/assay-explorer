@@ -1,3 +1,12 @@
+#!/usr/bin/env python
+
+"""
+"uploads" new data from file ./raw/data.zip
+
+By "upload" here I mean that it preps the data from ./raw/ into ./data/
+    (and maybe also ./db/?).
+"""
+
 # TODO: remove unused functions from library / combine/separate libraries into better modules
 # TODO: put zip file somewhere safe after its been used.
 # TODO: create regular backups to google docs or S3
@@ -9,17 +18,12 @@ from AssayExplorer.upload_data import (rename_column, get_normalization_config,
 )
 from utils import get_layout_data
 
-from IPython.display import HTML
-from toggle import TOGGLE_CODE
-HTML(TOGGLE_CODE)
-
 plate_import_config = get_plate_import_config(get_normalization_config())
 
 from toolz import thread_last, thread_first
 import os
 from raw import get_plate_data
 from utils import add_dict_to_dataframe
-
 
 # Series -> DataFrame
 def gather_plate_data(plate_metadata):
@@ -66,34 +70,8 @@ def gather_plate_data(plate_metadata):
         pd.merge(plate_data,layout_data,on = 'Well Name'),
         (add_dict_to_dataframe,dict(plate_metadata)))
 
-
-uploader = Uploader(plate_import_config, gather_plate_data)
-
-import IPython.html.widgets as widgets
-stage_button = widgets.Button(description = "Check data")
-stage_button.on_click(uploader.check)
-
-stage_button
-
-save_button = widgets.Button(description = "Save data",background_color='Green',color = 'white')
-save_button.on_click(uploader.add_new_data)
-save_button
-
-
 import pandas as pd
 
-db_data = pd.read_csv(uploader.db_path)
-timestamps = db_data['Upload Timestamp'].unique()
-
-delete_options = thread_last(
-    timestamps,
-    list,
-    lambda x: sorted(x,reverse=True),
-    (map,lambda x: (x,x)),
-    (map,lambda x: (format_timestamp(x[0]),x[1])),
-    OrderedDict)
-
-delete_dropdown = widgets.Dropdown(options = delete_options)
 
 def delete_handler(_):
     """ Remove data uploaded at selected timestamp. """
@@ -103,19 +81,7 @@ def delete_handler(_):
     clear_output()
     print "Just deleted data."
 
-delete_button = widgets.Button(description = 'Delete',background_color='Red',color = 'white')
-delete_button.on_click(delete_handler)
-widgets.HBox(children = [delete_button,delete_dropdown])
 
-# testpath = '/notebooks/tmp/extracted-data/Plates/APB HS JS (60X) 08.06.2015 siRNA VE821.txt'
-# test = get_plate_data(testpath,uploader.plate_import_config)
-
-# layouttest = get_layout_data('/notebooks/tmp/extracted-data/Layouts/layout.csv')
-
-# test['Well Name'].unique()
-# test2 = pd.read_csv('/notebooks/tmp/imported-data/new_data.csv')
-
-# String -> [String]
 # def split_on_newlines(string):
 #     """ Given a string which may contain \r, \n, or both,
 #         split on newlines so neither character is present in output. """
@@ -130,35 +96,77 @@ widgets.HBox(children = [delete_button,delete_dropdown])
 #     else:
 #         return string.split('\n')
 
-# l2 = thread_last(
-#      '/notebooks/tmp/extracted-data/Layouts/layout.csv',
-#      from_file,
-#      lambda string: string.replace('\r','').split('\n'),
-#      (map,lambda line: line.rstrip(',')),
-#      (partitionby, lambda line: string_only_contains(line,',')),
-#      (filter,lambda group: not string_only_contains(group[0],',')),
-#      (map,lambda strings: str.join('\n',strings)),
-#      (map,parse_label_group),
-#      (reduce,lambda left,right: pd.merge(left,right,on='Well Name')))
-
-
 # # String -> Boolean
 # def string_is_empty(string):
 #     """ Return True if string is empty. """
 #     return string == ''
 
-# l2 = thread_last(
-#     os.path.join(PATH, 'data', 'Layouts', 'layout.csv'),
-#     from_file,
-#     split_on_newlines,
-#     (map,lambda line: line.rstrip(',')),
-#     (partitionby, string_is_empty),
-#     (filter,lambda group: not string_is_empty(group[0])),
-#     (map,lambda strings: str.join('\n',strings)),
-#     (map,parse_label_group),
-#     (reduce,lambda left,right: pd.merge(left,right,on='Well Name')))
+if __name__ == "__main__":
+    uploader = Uploader(plate_import_config, gather_plate_data)
 
-# for x in l2['Units (concentration)'].unique():
-#     print x
+    raw_input("Ready to check data in ./raw/data.zip\n press enter to continue...")
+    print("This step takes around 3 minutes.")
+    uploader.check()
 
-# list(l2)
+    print("All files present & none of the data has already been uploaded.")
+    up_choice = raw_input("save data? [y/N]").lower()
+    if up_choice in ['yes', 'y']:
+        uploader.add_new_data()
+
+    print("If you've made any mistake, and need to delete something you've "
+        "uploaded, this is the place to do it.")
+
+    db_data = pd.read_csv(uploader.db_path)
+    timestamps = db_data['Upload Timestamp'].unique()
+
+    delete_options = thread_last(
+        timestamps,
+        list,
+        lambda x: sorted(x,reverse=True),
+        (map,lambda x: (x,x)),
+        (map,lambda x: (format_timestamp(x[0]),x[1])),
+        OrderedDict
+    )
+
+    print("options: ", delete_options)
+    del_choice = raw_input("delete? [y/N]")
+    if del_choice in ['yes', 'y']:
+        delete_handler()
+
+    # testpath = '/notebooks/tmp/extracted-data/Plates/APB HS JS (60X) 08.06.2015 siRNA VE821.txt'
+    # test = get_plate_data(testpath,uploader.plate_import_config)
+
+    # layouttest = get_layout_data('/notebooks/tmp/extracted-data/Layouts/layout.csv')
+
+    # test['Well Name'].unique()
+    # test2 = pd.read_csv('/notebooks/tmp/imported-data/new_data.csv')
+
+    # String -> [String]
+
+
+    # l2 = thread_last(
+    #      '/notebooks/tmp/extracted-data/Layouts/layout.csv',
+    #      from_file,
+    #      lambda string: string.replace('\r','').split('\n'),
+    #      (map,lambda line: line.rstrip(',')),
+    #      (partitionby, lambda line: string_only_contains(line,',')),
+    #      (filter,lambda group: not string_only_contains(group[0],',')),
+    #      (map,lambda strings: str.join('\n',strings)),
+    #      (map,parse_label_group),
+    #      (reduce,lambda left,right: pd.merge(left,right,on='Well Name')))
+
+    # l2 = thread_last(
+    #     os.path.join(PATH, 'data', 'Layouts', 'layout.csv'),
+    #     from_file,
+    #     split_on_newlines,
+    #     (map,lambda line: line.rstrip(',')),
+    #     (partitionby, string_is_empty),
+    #     (filter,lambda group: not string_is_empty(group[0])),
+    #     (map,lambda strings: str.join('\n',strings)),
+    #     (map,parse_label_group),
+    #     (reduce,lambda left,right: pd.merge(left,right,on='Well Name')))
+
+    # for x in l2['Units (concentration)'].unique():
+    #     print x
+
+    # list(l2)

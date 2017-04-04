@@ -53,7 +53,7 @@ class Uploader():
                 print('Creating "%s".' % folder_path)
                 os.mkdir(folder_path)
 
-    def check(self, _):
+    def check(self, eventObj=None):
         """ Extract zip and prepare for import into main dataset.
             If data can be imported, then create a new csv in a temp directory.
             Returns string of any warning or errors in this process. """
@@ -115,7 +115,7 @@ class Uploader():
                             index=False)
         return
 
-    def add_new_data(self, _):
+    def add_new_data(self, eventObj=None):
         """ Add new data (from temp file) to db file.
             Fails if there are duplicate cells."""
         try:
