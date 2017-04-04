@@ -9,13 +9,11 @@ import pandas as pd
 
 from toolz import partition, partitionby, thread_last
 from utils import (snd, exists_at_path, add_dict_to_dataframe,
-                   add_col, maprows, format_num, from_file, 
+                   add_col, maprows, format_num, from_file,
                    parse_label_group, string_only_contains, generate_sid)
 
 from raw import get_plate_data
 from conf import PATH
-
-from IPython.display import clear_output
 
 # String -> String
 def rename_column(col):
@@ -74,7 +72,6 @@ class Uploader():
              nonempty('Layouts/'), "It looks like you haven't got any layouts in your Layouts folder."]
 
         err = generate_message(initial_tests)
-        clear_output()
 
         if err != '':
             print("### ERROR ###")
@@ -125,8 +122,6 @@ class Uploader():
         new_data = pd.read_csv(os.path.join(self.temp_save_path,'new_data.csv'))
         all_data = pd.concat(db_data+[new_data])
         contains_duplicated_cells = all_data.duplicated('Cell SID').any()
-
-        clear_output()
 
         if contains_duplicated_cells:
             print("It looks like the data's already been added.")

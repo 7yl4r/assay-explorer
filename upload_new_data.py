@@ -78,7 +78,6 @@ def delete_handler(timestamp, db_data, uploader):
     """ Remove data uploaded at selected timestamp. """
     trimmed_data = db_data[db_data['Upload Timestamp'] != timestamp]
     trimmed_data.to_csv(uploader.db_path,index=False)
-    clear_output()
     print("Just deleted data.")
 
 
@@ -132,7 +131,7 @@ if __name__ == "__main__":
     del_choice = raw_input("delete? [y/N]")
     if del_choice in ['yes', 'y']:
         timestamp = raw_input("enter timestamp to delete")
-        delete_handler(timestamp, db_data, uploader)
+        delete_handler(int(timestamp), db_data, uploader)
 
     # testpath = '/notebooks/tmp/extracted-data/Plates/APB HS JS (60X) 08.06.2015 siRNA VE821.txt'
     # test = get_plate_data(testpath,uploader.plate_import_config)
