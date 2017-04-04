@@ -2,7 +2,6 @@ import os
 import shutil
 import zipfile
 import hashlib
-from collections import OrderedDict
 
 import arrow
 from numpy.random import random
@@ -10,7 +9,7 @@ import pandas as pd
 
 from toolz import partition, partitionby, thread_last
 from utils import (snd, exists_at_path, add_dict_to_dataframe,
-                   add_col, maprows, format_num, from_file, format_timestamp,
+                   add_col, maprows, format_num, from_file, 
                    parse_label_group, string_only_contains, generate_sid)
 
 from raw import get_plate_data

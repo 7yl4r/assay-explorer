@@ -23,7 +23,8 @@ plate_import_config = get_plate_import_config(get_normalization_config())
 from toolz import thread_last, thread_first
 import os
 from raw import get_plate_data
-from utils import add_dict_to_dataframe
+from utils import add_dict_to_dataframe, format_timestamp
+from collections import OrderedDict
 
 # Series -> DataFrame
 def gather_plate_data(plate_metadata):
