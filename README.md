@@ -1,6 +1,17 @@
 
 # Documentation
 
+## Project Structure
+A GUI interface is provided via Jupyter ipynb files. To use this you must host
+the ipynb files via `jupyter notebook` and open them in a web browser.
+
+Python scripts provide a CLI interface to the same functions as used in the
+jupyter notebook.
+
+* `/AssayExplorer/` contains the common core methods & classes.
+* .pynb files at project root provide the legacy jupyter GUI
+* .py files at project root re-create jupyter GUI behavior in CLI
+
 ## Uploading new data
 
 Summary:

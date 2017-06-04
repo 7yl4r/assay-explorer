@@ -18,6 +18,8 @@ from AssayExplorer.upload_data import (rename_column, get_normalization_config,
 )
 from utils import get_layout_data
 
+SECTION_DIV = "\n===========================================================\n"
+
 plate_import_config = get_plate_import_config(get_normalization_config())
 
 from toolz import thread_last, thread_first
@@ -107,10 +109,14 @@ if __name__ == "__main__":
     print("This step takes around 3 minutes.")
     uploader.check()
 
+    print (SECTION_DIV)
+
     print("All files present & none of the data has already been uploaded.")
     up_choice = raw_input("save data? [y/N]").lower()
     if up_choice in ['yes', 'y']:
         uploader.add_new_data()
+
+    print (SECTION_DIV)
 
     print("If you've made any mistake, and need to delete something you've "
         "uploaded, this is the place to do it.")
@@ -118,20 +124,25 @@ if __name__ == "__main__":
     db_data = pd.read_csv(uploader.db_path)
     timestamps = db_data['Upload Timestamp'].unique()
 
-    # delete_options = thread_last(
-    #     timestamps,
-    #     list,
-    #     lambda x: sorted(x,reverse=True),
-    #     (map,lambda x: (x,x)),
-    #     (map,lambda x: (format_timestamp(x[0]),x[1])),
-    #     OrderedDict
-    # )
+    delete_options = thread_last(
+        timestamps,
+        list,
+        lambda x: sorted(x,reverse=True),
+        (map,lambda x: (x,x)),
+        (map,lambda x: (format_timestamp(x[0]),x[1])),
+        OrderedDict
+    )
 
-    print("options: ", timestamps)
+    print("options: ", delete_options)
+    print("index\ttimestamp")
+    for i, option in enumerate(delete_options):
+        print(str(i) + ':\t' + option)
     del_choice = raw_input("delete? [y/N]")
     if del_choice in ['yes', 'y']:
-        timestamp = raw_input("enter timestamp to delete")
-        delete_handler(int(timestamp), db_data, uploader)
+        index = raw_input("enter index to delete: ")
+        delete_handler(int(index), db_data, uploader)
+
+    print (SECTION_DIV)
 
     # testpath = '/notebooks/tmp/extracted-data/Plates/APB HS JS (60X) 08.06.2015 siRNA VE821.txt'
     # test = get_plate_data(testpath,uploader.plate_import_config)
