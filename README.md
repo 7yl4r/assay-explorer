@@ -12,18 +12,21 @@ jupyter notebook.
 * .pynb files at project root provide the legacy jupyter GUI
 * .py files at project root re-create jupyter GUI behavior in CLI
 
-## Uploading new data
+## CLI Interface
+### upload-new-data
+* `python -m upload_new_data`
+
+## Jupyter Notebook Interface
+Start up:
+* `source ./virtualEnv/bin/activate`
+* `jupyter notebook`
 
 Summary:
 
 1. Create `data.zip` file like [example](http://45.55.10.127:8080/edit/add-data/data.zip).
-
 2. Upload [here](http://45.55.10.127:8080/tree/add-data).
-
 3. Add it to the database [here](http://45.55.10.127:8080/notebooks/assay-explorer/reorg/upload-new-data.ipynb).
-
 4. Set the cell phase thresholds [here](http://45.55.10.127:8080/notebooks/assay-explorer/reorg/set-cell-phase.ipynb#).
-
 5. Visualize the data [here](http://45.55.10.127:8080/notebooks/assay-explorer/reorg/vis.ipynb#).
 
 Note that [this](http://45.55.10.127:8080/tree/assay-explorer/reorg) is the main folder with these notebooks in it.
