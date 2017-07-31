@@ -2,15 +2,18 @@
 # Documentation
 
 ## Project Structure
-A GUI interface is provided via Jupyter ipynb files. To use this you must host
-the ipynb files via `jupyter notebook` and open them in a web browser.
+A GUI interface is provided via Jupyter ipynb files.
+To use this you must host the ipynb files via `jupyter notebook` and open them in a web browser.
+Python scripts provide a CLI interface to the same functions as used in the jupyter notebook.
 
-Python scripts provide a CLI interface to the same functions as used in the
-jupyter notebook.
-
-* `/AssayExplorer/` contains the common core methods & classes.
+* `./config` sets configuration that may differ depending on the data source.
+* `./AssayExplorer/` contains the common core methods & classes.
 * .pynb files at project root provide the legacy jupyter GUI
-* .py files at project root re-create jupyter GUI behavior in CLI
+* .py files at project root re-create jupyter GUI behavior in CLI and must be run as modules like `python -m upload_new_data` (for backwards compatability with the ipnb scripts in project root)
+
+## Data Flow
+1. uploaded data is dumped into `./raw` using params set in `./config`
+2. csv files are created from raw data in `./db/db.csv` and `./data/new_data.csv`
 
 ## CLI Interface
 ### upload-new-data

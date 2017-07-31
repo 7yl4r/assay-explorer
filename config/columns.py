@@ -1,3 +1,8 @@
+# ========================================================================
+# columns loaded by upload_data
+# ========================================================================
+# Note: the three attempts below are for different datasets, only one is
+#   really being used - check AssayExplorer/upload_data.py
 v1 = [
     [
         'Normalized_ColocSpot_area_sum (coloc)',
@@ -80,3 +85,8 @@ v3 = [
       ['# of Coloc Spots'],
       ['# of FITC-TxRed in ColocSpots']]
 ]
+
+# ========================================================================
+#intensity_column_name = 'NucIntegrated Intensity_Avg'  # old name
+intensity_column_name = 'NucInteg Intensity_Avg'
+# ========================================================================
